@@ -21,7 +21,6 @@ class Atende(models.Model):
     convenio = models.ForeignKey('Convenio', models.DO_NOTHING, db_column='convenio')
 
     class Meta:
-        managed = False
         db_table = 'atende'
         unique_together = (('medico', 'convenio'),)
         verbose_name = 'Médico Convênio'
@@ -84,6 +83,7 @@ class Medico(models.Model):
 
     def __str__(self):
         return self.nome
+
 
 
 class Paciente(models.Model):
