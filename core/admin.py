@@ -12,6 +12,7 @@ class AtendeAdmin(admin.ModelAdmin):
 
 class MedicoConvenioInline(admin.StackedInline):
     model = models.Atende
+    extra = 1
 
 
 @admin.register(models.Medico)
