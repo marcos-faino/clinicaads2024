@@ -10,4 +10,6 @@ urlpatterns = [
          name='pdf_pacientes'),
     path('graficos/consultasconvenio', views.ConsConvView.as_view(),
          name='graf_cons_conv'),
+    path('graficos/paccidade', views.GrafPacientesCidade.as_view(),
+         name='graf_pac_cid'),
 ]

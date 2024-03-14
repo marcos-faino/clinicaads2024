@@ -57,3 +57,32 @@ class ConsConvView(TemplateView):
         contexto['tabela'] = tabela
         contexto['grafico'] = self._criar_grafico()
         return contexto
+
+
+class GrafPacientesCidade(TemplateView):
+    template_name = "graficos/pacporcidade.html"
+
+    def _criar_grafico(self):
+        cidades = Paciente.objects.distinct().values_list('cidade',flat=True)
+        pacientes = Paciente.objects.all()
+        glabels = []
+        gvalores = []
+        for c in cidades:
+            glabels.append(c)
+            quant = pacientes.filter(cidade=c).count()
+            gvalores.append(quant)
+        pyplot.bar(glabels, gvalores)
+        buffer = BytesIO()
+        pyplot.savefig(buffer, format='png')
+        buffer.seek(0)
+        imagem = buffer.getvalue()
+        grafico = base64.b64encode(imagem)
+        grafico = grafico.decode('utf-8')
+        buffer.flush()
+        buffer.close()
+        return grafico
+
+    def get_context_data(self, **kwargs):
+        contexto = super().get_context_data(**kwargs)
+        contexto['grafico'] = self._criar_grafico()
+        return contexto
