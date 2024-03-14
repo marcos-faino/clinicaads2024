@@ -48,6 +48,7 @@ class ConsConvView(TemplateView):
         imagem = buffer.getvalue()
         grafico = base64.b64encode(imagem)
         grafico = grafico.decode('utf-8')
+        pyplot.close()
         buffer.close()
         return grafico
 
@@ -75,12 +76,12 @@ class GrafPacientesCidade(TemplateView):
         buffer = BytesIO()
         pyplot.savefig(buffer, format='png')
         buffer.seek(0)
-        imagem = buffer.getvalue()
-        grafico = base64.b64encode(imagem)
-        grafico = grafico.decode('utf-8')
-        buffer.flush()
+        img = buffer.getvalue()
+        graf = base64.b64encode(img)
+        graf = graf.decode('utf-8')
+        pyplot.close()
         buffer.close()
-        return grafico
+        return graf
 
     def get_context_data(self, **kwargs):
         contexto = super().get_context_data(**kwargs)
