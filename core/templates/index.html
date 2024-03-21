@@ -2,18 +2,34 @@
 
 {% block titulo %}Minha Clínica 2024 {% endblock %}
 {% block conteudo %}
-        <header>
-            <h1>Minha Clínica</h1>
-        </header>
-        <article>
+<header>
+    <h1>Minha Clínica</h1>
+</header>
+<article class="grid">
+    <div>
+        <div>
             <a href="{% url 'relat_pacientes' %}" role="button" class="secondary">
                 Relatório Pacientes
             </a>
+        </div>
+        <div>
             <a href="{% url 'graf_cons_conv' %}" role="button" class="secondary">
                 Gráfico de Consultas por Convênio
             </a>
+        </div>
+        <div>
             <a href="{% url 'graf_pac_cid' %}" role="button" class="secondary">
                 Gráfico de Pacientes por Cidade
             </a>
-        </article>
+        </div>
+    </div>
+    <div>
+        <a href="{% url 'graf_pac_conv' %}" role="button" class="secondary">
+            Gráfico de Pacientes por Convênio
+        </a>
+        <a href="{% url 'consmens' %}" role="button" class="secondary">
+            Consultas por ano
+        </a>
+    </div>
+</article>
 {% endblock %}

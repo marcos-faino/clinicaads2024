@@ -1,11 +1,13 @@
 import base64
 from io import BytesIO
 
+from django.db.models import Count
+from django.http import JsonResponse
 from django.views import View
 from django.views.generic import TemplateView, ListView
 from matplotlib import pyplot
 
-from core.models import Paciente, Consulta, Convenio
+from core.models import Paciente, Consulta, Convenio, Possui
 from core.util import GeraPDFMixin
 
 
@@ -87,3 +89,52 @@ class GrafPacientesCidade(TemplateView):
         contexto = super().get_context_data(**kwargs)
         contexto['grafico'] = self._criar_grafico()
         return contexto
+
+
+
+class PacientePorConvenioListView(ListView):
+    template_name = 'graficos/pacconvgooglechart.html'
+    model = Paciente
+
+    def get_context_data(self, *args, **kwargs):
+        contexto = super().get_context_data(*args, **kwargs)
+        convenios = Convenio.objects.all()
+        dados=[]
+        for c in convenios:
+            dados.append(
+                {
+                    'convenio': c.nome,
+                    'pacientes': Possui.objects.filter(convenio=c.codconv).count()
+                }
+            )
+        contexto['dados'] = dados
+        return contexto
+
+
+class RelatorioConsultasAno(View):
+
+    def get(self, request, ano):
+        meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+        data = []
+        labels = []
+        # consultas = Consulta.objects.all().values('data__year').annotate(total=Count(id))
+        consultasano = Consulta.objects.all().filter(data__year=ano)
+        consultas = consultasano.values('data__month').annotate(total=Count(id))
+        for i in range(1, 12):
+            labels.append(meses[i-1])
+            for c in consultas:
+                if i == c['data__month']:
+                    data.append(c['total'])
+            data.append(0)
+
+        return JsonResponse({'labels':labels, 'data': data})
+
+
+class EscolhaMesView(TemplateView):
+    template_name = "graficos/dashboardchartjs.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        anos = Consulta.objects.all().values('data__year').distinct()
+        ctx['anos'] = anos
+        return ctx
